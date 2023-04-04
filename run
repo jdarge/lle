@@ -7,9 +7,9 @@ then
     cmake -B build/cmake/ -S .
     make -C build/cmake/
 elif [ "$1" = "rebuild" ]
-then 
+then
     rm -rf build/bin/* build/cmake/*
-    cmake -B build/cmake/ -S . 
+    cmake -B build/cmake/ -S .
     make -C build/cmake/
 elif [ "$1" = "clean" ]
 then
@@ -24,15 +24,21 @@ then
     echo -e "Rebuild project: ./run rebuild"
     echo -e "Clean project:\t ./run clean"
     echo -e "Run project:\t ./run"
-else 
+else
     if [ -e build/bin/$project ]
     then
         exec build/bin/$project "$@"
-    else 
+    else
         echo "No binary executable named \"$project\" found in the directory \"build/bin/\"."
         echo "Building..."
 
         cmake -B build/cmake/ -S .
         make -C build/cmake/
+                if [ -e build/bin/$project ]
+                then
+                        exec build/bin/$project
+                else
+                        echo "Project built, but no binary executable found. Verify your project names match between the shell script and CMakeLists.txt"
+                fi
     fi
 fi
