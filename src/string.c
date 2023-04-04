@@ -1,6 +1,5 @@
+#include "sbrk.h"
 #include "string.h"
-
-#include <malloc.h>//TODO
 
 void my_strrev(char *str, int len) {
     int start = 0;
@@ -178,7 +177,7 @@ size_t my_strcspn(const char *str, const char *reject) {
 
 char *my_strdup(const char *str) {
 
-    char *str_new = (char *) malloc(my_strlen(str) + 1);
+    char *str_new = (char *) my_sbrk(my_strlen(str) + 1);
 
     if (!str_new) return NULL;
 
@@ -245,7 +244,7 @@ char *my_strncpy(char *restrict dest, const char *restrict src, size_t n) {
 char *my_strndup(const char *str, size_t n) {
 
     size_t s_length = my_strnlen(str, n);
-    char *s = malloc(s_length + 1);
+    char *s = my_sbrk(s_length + 1);
 
     if (!s) return NULL;
 
