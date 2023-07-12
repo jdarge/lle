@@ -46,7 +46,7 @@ void node_test(void) {
         return;
     }
 
-    new_node->value = 420;
+    new_node->value = 99;
     new_node->next = NULL;
     head->next = new_node;
 
