@@ -1,5 +1,3 @@
-# schizo_diary (lol)
-
 ## Structure
 
 ```console
