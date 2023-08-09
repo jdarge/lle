@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18.4)
 
 # Setting a variable to use for both the project name and the resulting binary executable
-set(REPO schizo_diary)
+set(REPO lle)
 project(${REPO})
 set(PROJECT_NAME ${REPO})
 
