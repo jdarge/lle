@@ -1,6 +1,6 @@
 #!/bin/sh
 
-project="schizo_diary"
+project="lle"
 
 if [ "$1" = "build" ] || [ "$1" = "make" ]
 then
