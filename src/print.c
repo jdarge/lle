@@ -24,12 +24,7 @@ void my_puts(const char *str) {
         return;
     }
 
-    size_t len = 0;
-    const char *p = str;
-    while (*p != '\0') {
-        ++len;
-        ++p;
-    }
+    size_t len = my_strlen(str);
 
     __asm__ __volatile__ (
             "syscall\n\t"
@@ -40,77 +35,73 @@ void my_puts(const char *str) {
 }
 
 // Write an integer to standard output
-void my_putint(long n) {
-    char str[11]; // Max integer size is 10 digits plus null terminator
-    int i = 0;
-    do {
-        str[i++] = (char) (n % 10 + '0');
-        n /= 10;
-    } while (n > 0);
-    str[i] = '\0';
-    my_strrev(str, i); // Reverse the string to get the correct order
-
-    size_t len = 0;
-    const char *p = str;
-    while (*p != '\0') {
-        ++len;
-        ++p;
-    }
-    __asm__ __volatile__ (
-            "syscall\n\t"
-            :
-            : "a"(1), "D"(1), "S"(str), "d"(len)
-            : "memory"
-            );
-}
-
-// Write a floating-point number to standard output
-void my_putfloat(double num) {
-
-    char str[20];
+void my_putlong(long n, int width, int type) {
+    char str[20]; // Max integer size is 19 digits plus null terminator
     int i = 0;
 
     // Handle negative numbers
-    if (num < 0) {
-        str[i++] = '-';
-        num = -num;
+    if (n < 0) {
+        my_putchar('-');
+        n = -n;
+        width--;
     }
 
-    // Extract integer and fractional parts
-    int integer_part = (int) num;
-    float fractional_part = (float) (num - integer_part);
+    if (type == LONG && width > LONG_LENGTH) width = LONG_LENGTH;
+    if (type == INT && width > INT_LENGTH) width = INT_LENGTH;
 
-    // Convert integer part to string
-    if (integer_part == 0) {
+    // Convert integer to string
+    if (n == 0) {
         str[i++] = '0';
     } else {
-        while (integer_part != 0) {
-            int digit = integer_part % 10;
-            str[i++] = (char) (digit + '0');
-            integer_part /= 10;
+        while (n > 0) {
+            str[i++] = (char) (n % 10 + '0');
+            n /= 10;
         }
     }
 
-    // Reverse the integer part in the string
-    my_strrev(str, i);
-
-    // Add decimal point and convert fractional part to string
-    if (fractional_part > 0) {
-        str[i++] = '.';
-        int decimal_places = 6;
-        while (decimal_places-- > 0) {
-            fractional_part *= 10;
-            int digit = (int) fractional_part;
-            str[i++] = (char) (digit + '0');
-            fractional_part -= (float) digit;
-        }
-    }
-
-    // Add null terminator
+    // Null-terminate the string
     str[i] = '\0';
 
-    // Print the string
+    // Reverse the string if necessary
+    my_strrev(str, i);
+
+    // Print the number with padding
+    int str_len = i;
+    while (width > str_len) {
+        my_putchar(' ');
+        width--;
+    }
     my_puts(str);
+}
+
+// Write a floating-point number to standard output
+void my_putdouble(double num, int width, int type) {
+
+    // Handle negative numbers
+    if (num < 0) {
+        my_putchar('-');
+        num = -num;
+        width--;
+    }
+
+    if (width == 0) width = (type == DOUBLE) ? DOUBLE_LENGTH : FLOAT_LENGTH; // todo
+    if (type == DOUBLE && width > DOUBLE_LENGTH) width = DOUBLE_LENGTH;
+    if (type == FLOAT && width > FLOAT_LENGTH) width = FLOAT_LENGTH;
+
+    // Print integer part
+    long int_part = (long) num;
+    my_putlong(int_part, 0, (type == DOUBLE) ? LONG : INT);
+
+    // Print decimal point and fractional part
+    num -= (double) int_part;
+    if (num > 0) {
+        my_putchar('.');
+        for (int i = 0; i < width; ++i) {
+            num *= 10;
+            my_putchar((char) ((int) num + '0'));
+            num -= (int) num;
+        }
+    }
 }
 
 void my_vprintf(const char *format, va_list args) {
@@ -121,7 +112,16 @@ void my_vprintf(const char *format, va_list args) {
 
     // Parse the format string
     for (size_t i = 0; format[i] != '\0'; ++i) {
+
+        if (format[i] == '!' && format[i + 1] == '%'
+                ) { //fix this, not safe
+            my_putchar('%');
+            i++;
+            continue;
+        }
+
         if (format[i] == '%') {
+
             ++i;  // Skip the '%'
 
             int is_long = 0;
@@ -130,35 +130,46 @@ void my_vprintf(const char *format, va_list args) {
                 ++i;  // Skip the 'l'
             }
 
+            // Check for width specifier
+            int width = 0;
+            while (format[i] >= '0' && format[i] <= '9') {
+                width = width * 10 + (format[i] - '0');
+                ++i;
+            }
+
             switch (format[i]) {
                 case 'c':
-                    c = (char) my_va_arg(args,
-                    int);
+                    c = (char) my_va_arg(args, int);
                     my_putchar(c);
                     break;
 
                 case 's':
-                    s = my_va_arg(args,
-                    const char*);
+                    s = my_va_arg(args, const char*);
                     my_puts(s);
                     break;
 
                 case 'd':
                 case 'i':
-                    n = is_long ? my_va_arg(args,
-                    long) : my_va_arg(args,
-                    int);
-                    my_putint(n);
+                    n = is_long ? my_va_arg(args, long) : my_va_arg(args, int);
+                    my_putlong(n, width, (is_long) ? LONG : INT);
                     break;
 
                 case 'f':
-                    f = my_va_arg(args,
-                    double);
-                    my_putfloat(f);
+                    f = my_va_arg(args, double); // no need for DOUBLE CHECK ig... floats get promoted?
+                    my_putdouble(f, width, (is_long) ? DOUBLE : FLOAT);
                     break;
 
+                case '\0':
+                    // End of format string
+                    return;
+
                 default:
-                    // Unsupported format specifier; ignore it.
+                    // Unsupported format specifier or width; ignore it.
+                    my_putchar('%');
+                    if (is_long) {
+                        my_putchar('l');
+                    }
+                    my_putchar(format[i]);
                     break;
             }
         } else {
