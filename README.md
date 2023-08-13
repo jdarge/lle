@@ -4,14 +4,24 @@
 .
 ├── build
 │   ├── bin
+│   │   └── lle
 │   └── cmake
 ├── CMakeLists.txt
 ├── driver.c
 ├── include
-│   └── foo.h
+│   ├── builtin.h
+│   ├── def.h
+│   ├── print.h
+│   ├── sbrk.h
+│   ├── string.h
+│   └── system.h
+├── README.md
 ├── run.sh
 └── src
-    └── foo.c
+    ├── print.c
+    ├── sbrk.c
+    ├── string.c
+    └── system.c
 ```
 
 ## Commands
