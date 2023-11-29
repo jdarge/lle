@@ -4,7 +4,7 @@
 #include "string.h"
 
 // Write a single character to standard output
-void my_putchar(char c) {
+void putchar(char c) {
     __asm__ __volatile__ (
             "mov $1, %%rax\n\t"   // System call number for write
             "mov $1, %%rdi\n\t"   // File descriptor for stdout
@@ -18,13 +18,13 @@ void my_putchar(char c) {
 }
 
 // Write a null-terminated string to standard output
-void my_puts(const char *str) {
+void puts(const char *str) {
 
     if (!str) {
         return;
     }
 
-    size_t len = my_strlen(str);
+    size_t len = strlen(str);
 
     __asm__ __volatile__ (
             "syscall\n\t"
@@ -35,13 +35,13 @@ void my_puts(const char *str) {
 }
 
 // Write an integer to standard output
-void my_putlong(long n, int width, int type) {
+void putlong(long n, int width, int type) {
     char str[20]; // Max integer size is 19 digits plus null terminator
     int i = 0;
 
     // Handle negative numbers
     if (n < 0) {
-        my_putchar('-');
+        putchar('-');
         n = -n;
         width--;
     }
@@ -63,23 +63,23 @@ void my_putlong(long n, int width, int type) {
     str[i] = '\0';
 
     // Reverse the string if necessary
-    my_strrev(str, i);
+    strrev(str, i);
 
     // Print the number with padding
     int str_len = i;
     while (width > str_len) {
-        my_putchar(' ');
+        putchar(' ');
         width--;
     }
-    my_puts(str);
+    puts(str);
 }
 
 // Write a floating-point number to standard output
-void my_putdouble(double num, int width, int type) {
+void putdouble(double num, int width, int type) {
 
     // Handle negative numbers
     if (num < 0) {
-        my_putchar('-');
+        putchar('-');
         num = -num;
         width--;
     }
@@ -90,21 +90,21 @@ void my_putdouble(double num, int width, int type) {
 
     // Print integer part
     long int_part = (long) num;
-    my_putlong(int_part, 0, (type == DOUBLE) ? LONG : INT);
+    putlong(int_part, 0, (type == DOUBLE) ? LONG : INT);
 
     // Print decimal point and fractional part
     num -= (double) int_part;
     if (num > 0) {
-        my_putchar('.');
+        putchar('.');
         for (int i = 0; i < width; ++i) {
             num *= 10;
-            my_putchar((char) ((int) num + '0'));
+            putchar((char) ((int) num + '0'));
             num -= (int) num;
         }
     }
 }
 
-void my_vprintf(const char *format, va_list args) {
+void vprintf(const char *format, va_list args) {
     char c;
     long n;
     double f;
@@ -114,8 +114,8 @@ void my_vprintf(const char *format, va_list args) {
     for (size_t i = 0; format[i] != '\0'; ++i) {
 
         if (format[i] == '!' && format[i + 1] == '%'
-                ) { //fix this, not safe
-            my_putchar('%');
+                ) { // Fix this, it's not safe
+            putchar('%');
             i++;
             continue;
         }
@@ -139,48 +139,53 @@ void my_vprintf(const char *format, va_list args) {
 
             switch (format[i]) {
                 case 'c':
-                    c = (char) my_va_arg(args, int);
-                    my_putchar(c);
+                    c = (char) va_arg(args, int);
+                    putchar(c);
                     break;
 
                 case 's':
-                    s = my_va_arg(args, const char*);
-                    my_puts(s);
+                    s = va_arg(args, const char*);
+                    puts(s);
                     break;
 
                 case 'd':
                 case 'i':
-                    n = is_long ? my_va_arg(args, long) : my_va_arg(args, int);
-                    my_putlong(n, width, (is_long) ? LONG : INT);
+                    n = is_long ? va_arg(args, long) : va_arg(args, int);
+                    putlong(n, width, (is_long) ? LONG : INT);
                     break;
 
                 case 'f':
-                    f = my_va_arg(args, double); // no need for DOUBLE CHECK ig... floats get promoted?
-                    my_putdouble(f, width, (is_long) ? DOUBLE : FLOAT);
+                    f = va_arg(args, double); // Floats get promoted
+                    putdouble(f, width, (is_long) ? DOUBLE : FLOAT);
                     break;
 
                 case '\0':
-                    // End of format string
                     return;
 
                 default:
-                    // Unsupported format specifier or width; ignore it.
-                    my_putchar('%');
+                    // Unsupported format specifier or width; ignore it
+                    putchar('%');
                     if (is_long) {
-                        my_putchar('l');
+                        putchar('l');
                     }
-                    my_putchar(format[i]);
+                    putchar(format[i]);
                     break;
             }
         } else {
-            my_putchar(format[i]);
+            putchar(format[i]);
         }
     }
 }
 
-void my_printf(const char *format, ...) {
+void printf(const char *format, ...) {
     va_list args;
-    my_va_start(args, format);
-    my_vprintf(format, args);
-    my_va_end(args);
+    va_start(args, format);
+    vprintf(format, args);
+    va_end(args);
+}
+
+// fix later
+void __stack_chk_fail (void) {
+    // *(volatile char *)0=0;
+    __asm__ __volatile__( "hlt" : : : "memory" );
 }

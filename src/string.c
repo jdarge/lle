@@ -1,7 +1,7 @@
 #include "sbrk.h"
 #include "string.h"
 
-void my_strrev(char *str, int len) {
+void strrev(char *str, int len) {
     int start = 0;
     int end = len - 1;
     char temp;
@@ -14,7 +14,7 @@ void my_strrev(char *str, int len) {
     }
 }
 
-void *my_memccpy(void *restrict dest, const void *restrict src, int c, size_t n) {
+void *memccpy(void *restrict dest, const void *restrict src, int c, size_t n) {
 
     unsigned char *d = (unsigned char *) dest;
     unsigned char *s = (unsigned char *) src;
@@ -25,7 +25,7 @@ void *my_memccpy(void *restrict dest, const void *restrict src, int c, size_t n)
     return 0;
 }
 
-void *my_memchr(const void *src, int c, size_t n) {
+void *memchr(const void *src, int c, size_t n) {
 
     unsigned char *s = (unsigned char *) src;
 
@@ -38,7 +38,7 @@ void *my_memchr(const void *src, int c, size_t n) {
     return NULL;
 }
 
-void *my_memrchr(const void *src, int c, size_t n) {
+void *memrchr(const void *src, int c, size_t n) {
 
     unsigned char *s = (unsigned char *) src;
 
@@ -51,7 +51,7 @@ void *my_memrchr(const void *src, int c, size_t n) {
     return NULL;
 }
 
-int my_memcmp(const void *mem_p1, const void *mem_p2, size_t n) {
+int memcmp(const void *mem_p1, const void *mem_p2, size_t n) {
 
     int ret = 0;
 
@@ -65,7 +65,7 @@ int my_memcmp(const void *mem_p1, const void *mem_p2, size_t n) {
     return ret;
 }
 
-void *my_memcpy(void *restrict dest, const void *restrict src, size_t n) {
+void *memcpy(void *restrict dest, const void *restrict src, size_t n) {
 
     unsigned char *d = (unsigned char *) dest;
     unsigned char *s = (unsigned char *) src;
@@ -77,7 +77,7 @@ void *my_memcpy(void *restrict dest, const void *restrict src, size_t n) {
     return dest;
 }
 
-void *my_memmove(void *dest, const void *src, size_t n) {
+void *memmove(void *dest, const void *src, size_t n) {
 
     char *d = (char *) dest;
     char *s = (char *) src;
@@ -93,7 +93,7 @@ void *my_memmove(void *dest, const void *src, size_t n) {
     return dest;
 }
 
-void *my_memset(void *mem_p, int i, size_t n) {
+void *memset(void *mem_p, int i, size_t n) {
 
     char *p = (char *) mem_p;
 
@@ -102,22 +102,22 @@ void *my_memset(void *mem_p, int i, size_t n) {
     return mem_p;
 }
 
-char *my_stpcpy(char *restrict dest, const char *restrict src) {
+char *stpcpy(char *restrict dest, const char *restrict src) {
 
     while ((*dest++ = *src++));
 
     return dest - 1;
 }
 
-char *my_stpncpy(char *restrict dest, const char *restrict src, size_t n) {
+char *stpncpy(char *restrict dest, const char *restrict src, size_t n) {
 
     while (n-- && (*dest++ = *src++));
-    my_memset(dest, 0, 1);// not sure about this
+    memset(dest, 0, 1);// not sure about this
 
     return dest;
 }
 
-char *my_strcat(char *restrict dest, const char *restrict src) {
+char *strcat(char *restrict dest, const char *restrict src) {
 
     char *s = dest;
 
@@ -127,7 +127,7 @@ char *my_strcat(char *restrict dest, const char *restrict src) {
     return s;
 }
 
-char *my_strchr(const char *str, int c) {
+char *strchr(const char *str, int c) {
 
     while (*str != (char) c) {
         if (*str++ == '\0') return NULL;
@@ -136,7 +136,7 @@ char *my_strchr(const char *str, int c) {
     return (char *) str;
 }
 
-int my_strcmp(const char *str1, const char *str2) {
+int strcmp(const char *str1, const char *str2) {
 
     unsigned char str1__;
     unsigned char str2__;
@@ -153,7 +153,7 @@ int my_strcmp(const char *str1, const char *str2) {
     return (str1__ - str2__);
 }
 
-char *my_strcpy(char *restrict dest, const char *restrict src) {
+char *strcpy(char *restrict dest, const char *restrict src) {
 
     char *s = dest;
 
@@ -162,7 +162,7 @@ char *my_strcpy(char *restrict dest, const char *restrict src) {
     return s;
 }
 
-size_t my_strcspn(const char *str, const char *reject) {
+size_t strcspn(const char *str, const char *reject) {
 
     size_t count = 0;
 
@@ -175,16 +175,16 @@ size_t my_strcspn(const char *str, const char *reject) {
     return count;
 }
 
-char *my_strdup(const char *str) {
+char *strdup(const char *str) {
 
-    char *str_new = (char *) my_sbrk(my_strlen(str) + 1);
+    char *str_new = (char *) sbrk(strlen(str) + 1);
 
     if (!str_new) return NULL;
 
-    return my_strcpy(str_new, str);
+    return strcpy(str_new, str);
 }
 
-size_t my_strlen(const char *str) {
+size_t strlen(const char *str) {
 
     const char *s = str;
 
@@ -193,7 +193,7 @@ size_t my_strlen(const char *str) {
     return s - str;
 }
 
-char *my_strncat(char *restrict dest, const char *restrict src, size_t n) {
+char *strncat(char *restrict dest, const char *restrict src, size_t n) {
 
     char *s = dest;
 
@@ -210,7 +210,7 @@ char *my_strncat(char *restrict dest, const char *restrict src, size_t n) {
     return s;
 }
 
-int my_strncmp(const char *str1, const char *str2, size_t n) {
+int strncmp(const char *str1, const char *str2, size_t n) {
 
     unsigned char str1__;
     unsigned char str2__;
@@ -230,7 +230,7 @@ int my_strncmp(const char *str1, const char *str2, size_t n) {
     return 0;
 }
 
-char *my_strncpy(char *restrict dest, const char *restrict src, size_t n) {
+char *strncpy(char *restrict dest, const char *restrict src, size_t n) {
 
     char *s = dest;
 
@@ -241,22 +241,22 @@ char *my_strncpy(char *restrict dest, const char *restrict src, size_t n) {
     return s;
 }
 
-char *my_strndup(const char *str, size_t n) {
+char *strndup(const char *str, size_t n) {
 
-    size_t s_length = my_strnlen(str, n);
-    char *s = my_sbrk(s_length + 1);
+    size_t s_length = strnlen(str, n);
+    char *s = sbrk(s_length + 1);
 
     if (!s) return NULL;
 
-    my_memcpy(s, str, s_length);
+    memcpy(s, str, s_length);
     s[s_length] = '\0';
 
     return s;
 }
 
-size_t my_strnlen(const char *str, size_t maxlen) {
+size_t strnlen(const char *str, size_t maxlen) {
 
-    const char *p = my_memchr(str, 0, maxlen);
+    const char *p = memchr(str, 0, maxlen);
 
     if (p) {
         return p - str;
@@ -265,9 +265,9 @@ size_t my_strnlen(const char *str, size_t maxlen) {
     return maxlen;
 }
 
-char *my_strpbrk(const char *str, const char *accept) {
+char *strpbrk(const char *str, const char *accept) {
 
-    str += my_strcspn(str, accept);
+    str += strcspn(str, accept);
 
     if (*str) {
         return (char *) str;
@@ -276,12 +276,12 @@ char *my_strpbrk(const char *str, const char *accept) {
     return NULL;
 }
 
-char *my_strrchr(const char *str, int c) {
+char *strrchr(const char *str, int c) {
 
-    return my_memrchr(str, c, my_strlen(str) + 1);
+    return memrchr(str, c, strlen(str) + 1);
 }
 
-size_t my_strspn(const char *str, const char *accept) {
+size_t strspn(const char *str, const char *accept) {
 
     size_t count = 0;
 
@@ -299,30 +299,30 @@ size_t my_strspn(const char *str, const char *accept) {
     return count;
 }
 
-char *my_strtok(char *restrict str, const char *restrict delim) {
+char *strtok(char *restrict str, const char *restrict delim) {
 
     static char *p;
 
     if (!str && !(str = p)) return NULL;
 
-    str += my_strspn(str, delim);
+    str += strspn(str, delim);
     if (!*str) return NULL;
 
-    p = str + my_strcspn(str, delim);
+    p = str + strcspn(str, delim);
     if (*p) *p++ = '\0';
     else p = NULL;
 
     return str;
 }
 
-char *my_strtok_r(char *restrict str, const char *restrict delim, char **restrict saveptr) {
+char *strtok_r(char *restrict str, const char *restrict delim, char **restrict saveptr) {
 
     if (!str && !(str = *saveptr)) return NULL;
 
-    str += my_strspn(str, delim);
+    str += strspn(str, delim);
     if (!*str) return NULL;
 
-    *saveptr = str + my_strcspn(str, delim);
+    *saveptr = str + strcspn(str, delim);
     if (**saveptr) *(*saveptr)++ = '\0';
     else *saveptr = NULL;
 
@@ -347,7 +347,7 @@ RETURN VALUE
 	an application that wishes to check for errors should initialize errno to zero before the call,
 	and then check errno after the call.
 */
-/*char *my_strerror(int errnum) {// TODO
+/*char *strerror(int errnum) {// TODO
 
 	return NULL;
 }*/
@@ -379,7 +379,7 @@ RETURN VALUE
 	number is returned (since glibc 2.13), or -1 is returned and errno is set to indicate the 
 	error (glibc versions before 2.13).
 */
-/*int my_strerror_r(int errnum, char *buf, size_t buflen) {// TODO
+/*int strerror_r(int errnum, char *buf, size_t buflen) {// TODO
 
 	return 0xDEADBEEF;
 }*/
@@ -394,7 +394,7 @@ RETURN VALUE
 	The strsignal() function returns the appropriate description string, or an unknown signal 
 	message if the signal number is invalid.
 */
-/*char *my_strsignal(int sig) {// TODO
+/*char *strsignal(int sig) {// TODO
 
 	return NULL;
 }*/
@@ -410,7 +410,7 @@ RETURN VALUE
 
 	If needle is the empty string, the return value is always haystack itself.
 */
-/*char *my_strstr(const char *haystack, const char *needle) {// TODO
+/*char *strstr(const char *haystack, const char *needle) {// TODO
 
 	return NULL;
 }*/
@@ -427,7 +427,7 @@ RETURN VALUE
 	excluding the terminating null byte ('\0'). If the value returned is n or more, the contents of dest 
 	are indeterminate.
 */
-/*size_t my_strxfrm(char *restrict dest, const char *restrict src, size_t n) {// TODO
+/*size_t strxfrm(char *restrict dest, const char *restrict src, size_t n) {// TODO
 
 	return 0xDEADBEEF;
 }*/

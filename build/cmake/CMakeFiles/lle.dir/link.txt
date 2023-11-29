@@ -1,0 +1,1 @@
+/usr/bin/cc -Wall -Wextra -pedantic -Wno-builtin-declaration-mismatch -static-libgcc -static-libstdc++ -static-libasan -nostartfiles -nostdlib -g CMakeFiles/lle.dir/driver.c.o CMakeFiles/lle.dir/src/print.c.o CMakeFiles/lle.dir/src/sbrk.c.o CMakeFiles/lle.dir/src/string.c.o CMakeFiles/lle.dir/src/system.c.o -o /home/crtg/Desktop/lle/build/bin/lle 

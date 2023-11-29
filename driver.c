@@ -12,35 +12,57 @@ typedef struct node {
 
 // Tests
 void node_int_test(void);
-
 void node_float_test(void);
-
 void dynamic_int_array(void);
-
 void dynamic_float_array(void);
-
 void string(void);
+
+_Noreturn void exit(int code)
+{
+    /* Infinite for-loop since this function can't return */
+    for (;;) {
+        asm("mov %0, %%rax\n\t"
+            "mov %1, %%rdi\n\t"
+            "syscall\n\t"
+            :
+            : "r" ((uint64) SYS_exit),
+              "r" ((uint64) code)
+            : "%rax", "%rdi");
+    }
+}
 
 int main(void) {
 
     node_int_test();
-    // node_float_test();
     dynamic_int_array();
-    // dynamic_float_array();
     string();
+
+    // node_float_test();
+    // dynamic_float_array();
 
     return 0;
 }
+
+__asm (
+    ".global _start\n"
+    "_start:\n"
+    "   movl  (%rsp), %edi\n"
+    "   lea   8(%rsp), %rsi\n"
+    "   call  main\n"
+    "   movl  %eax, %edi\n"
+    "   movl  $60, %eax\n"
+    "   syscall\n"
+);
 
 void node_int_test(void) {
     // Create an empty linked list
     node_t *head = NULL;
 
     // Allocate the first node
-    node_t *new_node = (node_t *) my_sbrk(sizeof(node_t));
+    node_t *new_node = (node_t *) sbrk(sizeof(node_t));
 
     if (new_node == NULL) {
-        my_printf("Error: out of memory\n");
+        printf("Error: out of memory\n");
         return;
     }
 
@@ -49,9 +71,9 @@ void node_int_test(void) {
     head = new_node;
 
     // Allocate a second node
-    new_node = my_sbrk(sizeof(node_t));
+    new_node = sbrk(sizeof(node_t));
     if (new_node == NULL) {
-        my_printf("Error: out of memory\n");
+        printf("Error: out of memory\n");
         return;
     }
 
@@ -62,11 +84,11 @@ void node_int_test(void) {
     // Print the contents of the linked list
     node_t *current_node = head;
     while (current_node != NULL) {
-        my_printf("%d ", current_node->value);
+        printf("%d ", current_node->value);
         current_node = current_node->next;
     }
 
-    my_printf("\n");
+    printf("\n");
 }
 
 void node_float_test(void) {
@@ -74,10 +96,10 @@ void node_float_test(void) {
     node_t *head = NULL;
 
     // Allocate the first node
-    node_t *new_node = (node_t *) my_sbrk(sizeof(node_t));
+    node_t *new_node = (node_t *) sbrk(sizeof(node_t));
 
     if (new_node == NULL) {
-        my_printf("Error: out of memory\n");
+        printf("Error: out of memory\n");
         return;
     }
 
@@ -86,9 +108,9 @@ void node_float_test(void) {
     head = new_node;
 
     // Allocate a second node
-    new_node = my_sbrk(sizeof(node_t));
+    new_node = sbrk(sizeof(node_t));
     if (new_node == NULL) {
-        my_printf("Error: out of memory\n");
+        printf("Error: out of memory\n");
         return;
     }
 
@@ -99,18 +121,18 @@ void node_float_test(void) {
     // Print the contents of the linked list
     node_t *current_node = head;
     while (current_node != NULL) {
-        my_printf("%2f ", current_node->number);
+        printf("%2f ", current_node->number);
         current_node = current_node->next;
     }
 
-    my_printf("\n");
+    printf("\n");
 }
 
 void dynamic_int_array(void) {
     // Allocate an array of 10 integers
-    int *array = my_sbrk(10 * sizeof(int));
+    int *array = sbrk(10 * sizeof(int));
     if (array == NULL) {
-        my_printf("Error: out of memory\n");
+        printf("Error: out of memory\n");
         return;
     }
 
@@ -121,14 +143,14 @@ void dynamic_int_array(void) {
 
     // Print the contents of the array
     for (int i = 0; i < 10; i++) {
-        my_printf("%d ", array[i]);
+        printf("%d ", array[i]);
     }
-    my_printf("\n");
+    printf("\n");
 
     // Resize the array to hold 20 integers
-    int *new_array = my_sbrk(20 * sizeof(int));
+    int *new_array = sbrk(20 * sizeof(int));
     if (new_array == NULL) {
-        my_printf("Error: out of memory\n");
+        printf("Error: out of memory\n");
         return;
     }
 
@@ -144,16 +166,16 @@ void dynamic_int_array(void) {
 
     // Print the contents of the new array
     for (int i = 0; i < 20; i++) {
-        my_printf("%d ", new_array[i]);
+        printf("%d ", new_array[i]);
     }
-    my_printf("\n");
+    printf("\n");
 }
 
 void dynamic_float_array(void) {
     // Allocate an array of 10 integers
-    float *array = my_sbrk(10 * sizeof(float));
+    float *array = sbrk(10 * sizeof(float));
     if (array == NULL) {
-        my_printf("Error: out of memory\n");
+        printf("Error: out of memory\n");
         return;
     }
 
@@ -164,14 +186,14 @@ void dynamic_float_array(void) {
 
     // Print the contents of the array
     for (int i = 0; i < 10; i++) {
-        my_printf("%3f ", array[i]);
+        printf("%3f ", array[i]);
     }
-    my_printf("\n");
+    printf("\n");
 
     // Resize the array to hold 20 integers
-    float *new_array = my_sbrk(20 * sizeof(float));
+    float *new_array = sbrk(20 * sizeof(float));
     if (new_array == NULL) {
-        my_printf("Error: out of memory\n");
+        printf("Error: out of memory\n");
         return;
     }
 
@@ -187,35 +209,35 @@ void dynamic_float_array(void) {
 
     // Print the contents of the new array
     for (int i = 0; i < 20; i++) {
-        my_printf("%3f ", new_array[i]);
+        printf("%3f ", new_array[i]);
     }
-    my_printf("\n");
+    printf("\n");
 }
 
 void string(void) {
     // Allocate memory for two strings
-    char *str1 = (char *) my_sbrk(1024);
-    char *str2 = (char *) my_sbrk(1024);
+    char *str1 = (char *) sbrk(1024);
+    char *str2 = (char *) sbrk(1024);
 
     // Copy some text into the first string
-    my_strncpy(str1, "Hello, world!", 1024);
+    strncpy(str1, "Hello, world!", 1024);
 
     // Copy the first string into the second string
-    my_strncpy(str2, str1, 1024);
+    strncpy(str2, str1, 1024);
 
     // Print the two strings
-    my_printf("str1:\t%s\n", str1);
-    my_printf("str2:\t%s\n", str2);
+    printf("str1:\t%s\n", str1);
+    printf("str2:\t%s\n", str2);
 
-    my_printf("char:\t%c\n", 'a');
-    my_printf("int:\t%d\n", 543);
-    my_printf("float:\t%f\n", 1.99);
+    printf("char:\t%c\n", 'a');
+    printf("int:\t%d\n", 543);
+    printf("float:\t%f\n", 1.99);
 
     // TODO !%...
-    my_printf("int!%2:\t%3d\n", 543000);
-    my_printf("float!%2:%2f\n", 1.99);
+    printf("int!%2:\t%3d\n", 543000);
+    printf("float!%2:%2f\n", 1.99);
 
     // Free the memory allocated for the strings
-    my_brk(str2);
-    my_brk(str1);
+    brk(str2);
+    brk(str1);
 }
