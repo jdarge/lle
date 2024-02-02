@@ -113,66 +113,60 @@ void vprintf(const char *format, va_list args) {
     // Parse the format string
     for (size_t i = 0; format[i] != '\0'; ++i) {
 
-        if (format[i] == '!' && format[i + 1] == '%'
-                ) { // Fix this, it's not safe
+        if (format[i] == '!' && format[i + 1] == '%') { // Fix this, it's not safe
             putchar('%');
             i++;
             continue;
         }
-
-        if (format[i] == '%') {
-
-            ++i;  // Skip the '%'
-
-            int is_long = 0;
-            if (format[i] == 'l') {
-                is_long = 1;
-                ++i;  // Skip the 'l'
-            }
-
-            // Check for width specifier
-            int width = 0;
-            while (format[i] >= '0' && format[i] <= '9') {
-                width = width * 10 + (format[i] - '0');
-                ++i;
-            }
-
-            switch (format[i]) {
-                case 'c':
-                    c = (char) va_arg(args, int);
-                    putchar(c);
-                    break;
-
-                case 's':
-                    s = va_arg(args, const char*);
-                    puts(s);
-                    break;
-
-                case 'd':
-                case 'i':
-                    n = is_long ? va_arg(args, long) : va_arg(args, int);
-                    putlong(n, width, (is_long) ? LONG : INT);
-                    break;
-
-                case 'f':
-                    f = va_arg(args, double); // Floats get promoted
-                    putdouble(f, width, (is_long) ? DOUBLE : FLOAT);
-                    break;
-
-                case '\0':
-                    return;
-
-                default:
-                    // Unsupported format specifier or width; ignore it
-                    putchar('%');
-                    if (is_long) {
-                        putchar('l');
-                    }
-                    putchar(format[i]);
-                    break;
-            }
-        } else {
+        
+        if (format[i] != '%') {
             putchar(format[i]);
+            continue;
+        }
+        
+        ++i;  // Skip the '%'
+
+        int is_long = 0;
+        if (format[i] == 'l') {
+            is_long = 1;
+            ++i;  // Skip the 'l'
+        }
+
+        // Check for width specifier
+        int width = 0;
+        while (format[i] >= '0' && format[i] <= '9') {
+            width = width * 10 + (format[i] - '0');
+            ++i;
+        }
+
+        switch (format[i]) {
+        case 'c':
+            c = (char) va_arg(args, int);
+            putchar(c);
+            break;
+        case 's':
+            s = va_arg(args, const char*);
+            puts(s);
+            break;
+        case 'd':
+        case 'i':
+            n = is_long ? va_arg(args, long) : va_arg(args, int);
+            putlong(n, width, (is_long) ? LONG : INT);
+            break;
+        case 'f':
+            f = va_arg(args, double); // Floats get promoted
+            putdouble(f, width, (is_long) ? DOUBLE : FLOAT);
+            break;
+        case '\0':
+            return;
+        default:
+            // Unsupported format specifier or width; ignore it
+            putchar('%');
+            if (is_long) {
+                putchar('l');
+            }
+            putchar(format[i]);
+            break;
         }
     }
 }
