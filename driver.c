@@ -43,6 +43,7 @@ int main(void) {
     return 0;
 }
 
+// https://www.reddit.com/r/C_Programming/comments/se3kgi/hello_world_without_libc/
 __asm (
     ".global _start\n"
     "_start:\n"
